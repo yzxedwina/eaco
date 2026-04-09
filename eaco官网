@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EACO 电容器 - 电力电子行业的创新驱动力</title>
+    
+    <!-- 注入字节设计系统规范 Token (前置配置以避免执行时序导致的 Script error) -->
+    <script>
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2F88FF',      // 主色：品牌蓝
+                        primaryLight: '#EAF3FF', // 浅强调色
+                        textMain: '#1F2329',     // 主文字
+                        textSub: '#4E5969',      // 次级文字
+                        textMuted: '#86909C',    // 辅助文字
+                        divider: '#E5E6EB',      // 分割线
+                        bgWhite: '#FFFFFF',      // 背景色
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'HarmonyOS Sans', 'Alibaba PuHuiTi', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 规范化排版与组件 CSS -->
+    <style>
+        /* Typography 字体层级规范 */
+        h1 { font-size: 36px; font-weight: 600; line-height: 1.3; }
+        h2 { font-size: 28px; font-weight: 600; line-height: 1.35; }
+        h3 { font-size: 22px; font-weight: 500; line-height: 1.4; }
+        .text-body { font-size: 16px; font-weight: 400; line-height: 1.6; }
+        .text-assist { font-size: 14px; font-weight: 400; line-height: 1.5; }
+        .text-caption { font-size: 12px; font-weight: 400; line-height: 1.4; }
+
+        /* Components: Card 规范 */
+        .eaco-card {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease-in-out;
+        }
+        .eaco-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px 0 rgba(47, 136, 255, 0.12);
+        }
+
+        /* Components: Button 规范 */
+        .btn {
+            height: 36px;
+            border-radius: 8px;
+            padding: 0 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background-color: #2F88FF;
+            color: #FFFFFF;
+        }
+        .btn-primary:hover { background-color: #1A6CE5; }
+        .btn-secondary {
+            border: 1px solid #D0D5DD;
+            background-color: transparent;
+            color: #1F2329;
+        }
+        .btn-secondary:hover { background-color: #F7F8FA; }
+        
+        /* Layout: Container & Page Switching */
+        .layout-container { max-width: 1200px; margin: 0 auto; }
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: fadeIn 0.4s ease; }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(8px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+    </style>
+</head>
+<body class="bg-bgWhite text-textMain font-sans antialiased">
+
+    <!-- ========================================== -->
+    <!-- 全局组件：Navbar (所有页面共享) -->
+    <!-- ========================================== -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-divider">
+        <nav class="layout-container px-4 md:px-16 h-16 flex items-center justify-between">
+            <!-- 左侧 Logo 与 导航链接 -->
+            <div class="flex items-center gap-10">
+                <div class="text-primary font-bold text-2xl tracking-tight cursor-pointer" onclick="nav('home')">EACO</div>
+                <div class="hidden md:flex gap-6">
+                    <button onclick="nav('home')" class="nav-btn text-primary font-semibold text-assist transition-colors" id="nav-home">首页</button>
+                    <button onclick="nav('services')" class="nav-btn text-textSub hover:text-primary text-assist transition-colors" id="nav-services">产品与方案</button>
+                    <button onclick="nav('about')" class="nav-btn text-textSub hover:text-primary text-assist transition-colors" id="nav-about">关于我们</button>
+                </div>
+            </div>
+            <!-- 右侧 CTA 与 移动端菜单按钮 -->
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex gap-4">
+                    <button class="btn btn-secondary text-assist">联系技术</button>
+                    <button class="btn btn-primary text-assist" onclick="nav('services')">获取方案</button>
+                </div>
+                <!-- 移动端汉堡菜单 -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-textMain p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- 移动端下拉菜单 -->
+        <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-white border-b border-divider shadow-lg flex-col p-4 z-40">
+            <button onclick="navMobile('home')" class="text-left text-body text-textMain py-3 border-b border-divider font-medium">首页</button>
+            <button onclick="navMobile('services')" class="text-left text-body text-textMain py-3 border-b border-divider font-medium">产品与方案</button>
+            <button onclick="navMobile('about')" class="text-left text-body text-textMain py-3 font-medium">关于我们</button>
+        </div>
+    </header>
+
+    <!-- 主体内容区 -->
+    <main>
+        
+        <!-- ========================================== -->
+        <!-- 页面 1：index.html 模块 -->
+        <!-- ========================================== -->
+        <section id="page-home" class="page-section active">
+            <!-- Hero 区域 -->
+            <div class="py-16 md:py-20 px-4 md:px-16 layout-container">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+                    <!-- 左侧：文本信息区 (占7列) -->
+                    <div class="md:col-span-7 flex flex-col items-start">
+                        <span class="inline-block px-3 py-1 bg-primaryLight text-primary text-caption rounded-md mb-6 font-medium">Power Electronics Solutions</span>
+                        <h1 class="text-textMain mb-6">
+                            电力电子行业的<br>
+                            <span class="text-primary">核心创新驱动力</span>
+                        </h1>
+                        <p class="text-body text-textSub mb-8 max-w-[500px]">
+                            EACO 致力于为全球客户提供标准与定制化的电力电子元器件解决方案，深度赋能新能源、智能电网及高端制造领域，积极推动全球节能环保事业。
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button class="btn btn-primary" onclick="nav('services')">探索全场景方案</button>
+                            <button class="btn btn-secondary" onclick="nav('about')">了解 EACO 实力</button>
+                        </div>
+                    </div>
+                    <!-- 右侧：插图/UI区 (占5列) - 轻拟物化卡片展示 -->
+                    <div class="md:col-span-5 flex justify-center mt-8 md:mt-0">
+                        <div class="w-full aspect-[4/3] bg-primaryLight rounded-[16px] p-6 relative flex items-center justify-center">
+                            <div class="eaco-card w-full h-full flex flex-col justify-between border border-primary/10">
+                                <div class="w-12 h-12 bg-primaryLight rounded-lg flex items-center justify-center text-primary mb-4">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-textMain mb-2">高效能储能电容矩阵</h3>
+                                    <p class="text-caption text-textSub">98% 能量转化率 | 工业级高标准稳定性</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 核心领域 区域 -->
+            <div class="bg-[#F7F8FA] py-16">
+                <div class="layout-container px-4 md:px-16">
+                    <div class="mb-10 flex flex-col items-center text-center">
+                        <h2 class="text-textMain mb-4">核心赋能领域</h2>
+                        <p class="text-body text-textSub max-w-2xl">覆盖多个高精尖行业，提供全生命周期的定制化产品与技术服务</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- 卡片 1 -->
+                        <div class="eaco-card cursor-pointer group">
+                            <div class="text-primary font-bold text-2xl mb-4 opacity-40 group-hover:opacity-100 transition-opacity">01</div>
+                            <h3 class="mb-3 text-textMain">新能源发电</h3>
+                            <p class="text-assist text-textSub">为太阳能与风能发电系统提供长寿命、高稳定性的电容解决方案，保障电网平稳运行与能源输送。</p>
+                        </div>
+                        <!-- 卡片 2 -->
+                        <div class="eaco-card cursor-pointer group">
+                            <div class="text-primary font-bold text-2xl mb-4 opacity-40 group-hover:opacity-100 transition-opacity">02</div>
+                            <h3 class="mb-3 text-textMain">新能源汽车</h3>
+                            <p class="text-assist text-textSub">车规级高压薄膜电容器，完美支持快速充电与电驱动系统，有效提升整车续航里程与安全性能。</p>
+                        </div>
+                        <!-- 卡片 3 -->
+                        <div class="eaco-card cursor-pointer group">
+                            <div class="text-primary font-bold text-2xl mb-4 opacity-40 group-hover:opacity-100 transition-opacity">03</div>
+                            <h3 class="mb-3 text-textMain">智能电网与工控</h3>
+                            <p class="text-assist text-textSub">广泛应用于高频变频器、UPS/EPS 电源及感应加热设备，实现精准的工业级电能管理与转换。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 页面 2：services.html 模块 -->
+        <!-- ========================================== -->
+        <section id="page-services" class="page-section">
+            <div class="py-16 md:py-20 px-4 md:px-16 layout-container">
+                <div class="mb-12">
+                    <h1 class="text-textMain mb-6">全矩阵产品与供应链方案</h1>
+                    <p class="text-body text-textSub max-w-[700px]">
+                        我们不仅提供可靠的标准化电子产品，更致力于为企业提供涵盖特殊包装、料仓备货、成套组装等一体化的深度供应链管理服务。
+                    </p>
+                </div>
+                
+                <!-- 列表组件规范落地 (使用编号步骤结构) -->
+                <div class="space-y-6">
+                    <!-- 步骤条目 1 -->
+                    <div class="eaco-card flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center">
+                        <div class="w-16 h-16 bg-primaryLight text-primary rounded-xl flex items-center justify-center text-2xl font-bold shrink-0">
+                            01
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="mb-2 text-textMain">标准化产品体系</h3>
+                            <p class="text-assist text-textSub">全面涵盖数百种规格参数的薄膜电容器、电解电容器等。所有标准化系列产品均通过多项国际质量体系认证，快速响应行业通用设计需求。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤条目 2 -->
+                    <div class="eaco-card flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center">
+                        <div class="w-16 h-16 bg-primaryLight text-primary rounded-xl flex items-center justify-center text-2xl font-bold shrink-0">
+                            02
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="mb-2 text-textMain">定制化开发与测试服务</h3>
+                            <p class="text-assist text-textSub">针对严苛的特殊应用场景（如极端温度、高频震动），提供从前期电性参数设计、核心材料选型到后期恶劣环境模拟测试的全流程专属定制服务。</p>
+                        </div>
+                    </div>
+
+                    <!-- 步骤条目 3 -->
+                    <div class="eaco-card flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center">
+                        <div class="w-16 h-16 bg-primaryLight text-primary rounded-xl flex items-center justify-center text-2xl font-bold shrink-0">
+                            03
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="mb-2 text-textMain">一体化供应链协同</h3>
+                            <p class="text-assist text-textSub">深度集成 Bisco 工业体系，支持料仓备货系统联动、条形码精密管理及电子请购对接。提供从元器件到成套组装的一站式交付，大幅降低企业制造成本。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 页面 3：about.html 模块 -->
+        <!-- ========================================== -->
+        <section id="page-about" class="page-section">
+            <div class="py-16 md:py-20 px-4 md:px-16 layout-container grid grid-cols-1 md:grid-cols-12 gap-12">
+                <!-- 文本信息区 -->
+                <div class="md:col-span-7 flex flex-col justify-center">
+                     <h1 class="mb-6 text-textMain">驱动技术进步，<br>共建绿色未来</h1>
+                     <p class="text-body text-textSub mb-4">
+                         EACO Corporation (股票代码: EACO) 成立于 1973 年，是全球电力电子元器件及供应链解决方案的资深服务商。
+                     </p>
+                     <p class="text-body text-textSub mb-8">
+                         我们的核心愿景是通过 EACO 领先的技术和完善的服务网络，努力降低客户研发和制造过程中的成本。我们积极致力于与新能源行业的先进企业通力合作，借助元器件技术的突破，推动全球节能环保事业的长远发展。
+                     </p>
+                     
+                     <div class="grid grid-cols-2 gap-6">
+                         <div class="p-5 bg-primaryLight rounded-[12px]">
+                             <div class="text-3xl font-bold text-primary mb-2">50+</div>
+                             <div class="text-assist text-textSub">年电力电子行业深耕经验</div>
+                         </div>
+                         <div class="p-5 bg-primaryLight rounded-[12px]">
+                             <div class="text-3xl font-bold text-primary mb-2">100+</div>
+                             <div class="text-assist text-textSub">服务全球大中型核心客户</div>
+                         </div>
+                     </div>
+                </div>
+                
+                <!-- 里程碑/状态指示器 视觉区 -->
+                <div class="md:col-span-5">
+                     <div class="eaco-card h-full p-8 border border-divider/50 shadow-none">
+                         <h3 class="mb-8 text-textMain font-semibold">企业发展版图</h3>
+                         
+                         <!-- 步骤指示器规范 (左侧轴线) -->
+                         <div class="relative border-l-2 border-divider ml-3 space-y-10">
+                             <div class="relative pl-8">
+                                 <!-- 当前步骤高亮 (浅蓝包围) -->
+                                 <div class="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_0_4px_#EAF3FF]"></div>
+                                 <h4 class="text-body font-semibold text-textMain mb-2">全球化业务枢纽</h4>
+                                 <p class="text-caption text-textSub leading-relaxed">公司总部设立于美国加州 Anaheim。依托北美市场的雄厚基础，我们的业务现已深度辐射亚洲、加拿大及其他核心科技阵地。</p>
+                             </div>
+                             <div class="relative pl-8">
+                                 <div class="absolute w-3 h-3 bg-textMuted rounded-full -left-[7px] top-1.5"></div>
+                                 <h4 class="text-body font-semibold text-textMain mb-2">三大核心业务基石</h4>
+                                 <p class="text-caption text-textSub leading-relaxed">公司下设 Bisco 工业、National-Precision 和 Fast-Cor 三大专属业务部门，为不同领域的精密制造提供细分支撑。</p>
+                             </div>
+                             <div class="relative pl-8">
+                                 <div class="absolute w-3 h-3 bg-textMuted rounded-full -left-[7px] top-1.5"></div>
+                                 <h4 class="text-body font-semibold text-textMain mb-2">可持续的技术进化</h4>
+                                 <p class="text-caption text-textSub leading-relaxed">不断探索新型环保材料在电容器领域的应用，以严苛的品控和创新设计，回应时代对清洁能源技术的需求。</p>
+                             </div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- 全局组件：Footer (所有页面共享) -->
+    <!-- ========================================== -->
+    <footer class="bg-[#F7F8FA] border-t border-divider mt-12">
+        <div class="layout-container px-4 md:px-16 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
+                <div class="md:col-span-5">
+                    <div class="text-primary font-bold text-2xl tracking-tight mb-4">EACO</div>
+                    <p class="text-assist text-textSub max-w-sm mb-6">
+                        通过技术和服务降低研发制造成本，推动电力电子技术进步，投身全球节能环保事业。
+                    </p>
+                </div>
+                <div class="md:col-span-3">
+                    <h4 class="text-textMain font-medium text-assist mb-4">快捷导航</h4>
+                    <ul class="space-y-3 text-assist text-textSub">
+                        <li><button onclick="nav('home')" class="hover:text-primary transition-colors">公司首页</button></li>
+                        <li><button onclick="nav('services')" class="hover:text-primary transition-colors">产品与解决方案</button></li>
+                        <li><button onclick="nav('about')" class="hover:text-primary transition-colors">企业介绍与愿景</button></li>
+                    </ul>
+                </div>
+                <div class="md:col-span-4">
+                    <h4 class="text-textMain font-medium text-assist mb-4">联系方式</h4>
+                    <ul class="space-y-3 text-assist text-textSub">
+                        <li class="flex gap-2">
+                            <span class="text-textMuted w-16">总部:</span> 
+                            <span>5065 East Hunter Ave, Anaheim, CA 92807</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-textMuted w-16">邮箱:</span> 
+                            <span>contact@eaco.com</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-textMuted w-16">股票:</span> 
+                            <span>EACO (OTCPK)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-6 border-t border-divider flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-caption text-textMuted">
+                    &copy; 2026 EACO Corporation. All rights reserved. 
+                </div>
+                <div class="text-caption text-textMuted flex gap-4">
+                    <span>严格遵循「字节企业级设计规范」构建</span>
+                    <a href="#" class="hover:text-textSub">隐私政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- 交互逻辑：SPA 路由与状态表达 -->
+    <!-- ========================================== -->
+    <script>
+        // 核心导航逻辑 (模拟多页面跳转)
+        function nav(pageId) {
+            // 1. 隐藏所有 Section
+            document.querySelectorAll('.page-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            // 2. 显示目标 Section
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            // 3. 更新 Navbar 菜单的高亮状态
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                // 恢复为默认未选中状态 (弱化颜色)
+                el.classList.remove('text-primary', 'font-semibold');
+                el.classList.add('text-textSub');
+            });
+            
+            // 赋予当前项强调色 (主色)
+            const activeBtn = document.getElementById('nav-' + pageId);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-textSub');
+                activeBtn.classList.add('text-primary', 'font-semibold');
+            }
+            
+            // 4. 页面平滑滚动至顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 移动端菜单切换
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+        }
+
+        // 移动端导航点击
+        function navMobile(pageId) {
+            nav(pageId);
+            toggleMobileMenu();
+        }
+    </script>
+</body>
+</html>
